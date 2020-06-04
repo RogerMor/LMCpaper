@@ -399,7 +399,7 @@ import astroabc
 
 # # We define the function to perform the simulations
 
-# In[51]:
+# In[93]:
 
 
 # Función de la simulación adaptada para funcionar para ABC, de momento sin errores
@@ -411,17 +411,17 @@ def simu_LMC(param,pool=None):
     #print(dist_centre_lmc)
     alpha_centre_lmc=80.8939*np.pi/180. 
     delta_centre_lmc=-69.7561*np.pi/180.
-    pos_angle_lmc=(122.5 + 90.)*np.pi/180.
+    pos_angle_lmc=(param[3] + 90.)*np.pi/180.
     inc_angle_lmc=param[1]*np.pi/180. #34.7*np.pi/180. 
 
     # Disk component fixed hyperparameters
     disk_scale_height = 0.35
     disk_scale_length = 1.6
-    pos_angle_disk = 202.7*np.pi/180
+    pos_angle_disk =param[4]*np.pi/180 #202.7*np.pi/180
     ell_factor_disk =param[2]# 0.688 
     # Set No of samples we want to generate
     N = 1000000   
-    if dist_centre_lmc>0:
+    if dist_centre_lmc>0 and ell_factor_disk>0 and inc_angle_lmc>0 and disk_scale_height>0 and  disk_scale_length>0 and 0< param[3]<180 and 180<param[4]<360:
     # Generate disk location coordinates in the LMC proper reference frame
         xyz_proper = disk_fn(N, disk_scale_height, disk_scale_length, 
                          pos_angle_disk - pos_angle_lmc, ell_factor_disk)
@@ -453,13 +453,13 @@ def simu_LMC(param,pool=None):
     
 
 
-# In[52]:
+# In[94]:
 
 
 31*59
 
 
-# In[53]:
+# In[95]:
 
 
 32*60
@@ -467,7 +467,7 @@ def simu_LMC(param,pool=None):
 
 # # We define the distance metric that we want to use
 
-# In[54]:
+# In[108]:
 
 
 # Métrica de distáncia sencilla. Se puede cambiar cuando queramos.
@@ -492,7 +492,7 @@ def metric_asymetries(observed,simulated): # Function to compute the distance me
     return mychisum
 
 
-# In[55]:
+# In[109]:
 
 
 sigmam=np.ones((31,59))
@@ -531,21 +531,21 @@ sigma=np.reshape(sigmam,1829)*0.001
 # 
 # Please see the doc strings of the astroABC sampler for details on each of these settings.
 
-# In[56]:
+# In[110]:
 
 
 if __name__ == "__main__":
     prop={'tol_type':"exp","verbose":1,'adapt_t':True,'threshold':75,
-        'pert_kernel':2,'variance_method':0, 'dfunc':metric_asymetries, 'restart':"restart_abc.txt", 'outfile':"abc_mpi.txt",'mpi':True,'mp':False,'num_proc':8,
+        'pert_kernel':2,'variance_method':0, 'dfunc':metric_asymetries, 'restart':"restart_abc.txt", 'outfile':"abc_mpi.txt",'mpi':True,'mp':Fals,'num_proc':8,
         'from_restart':False}
 
 
 # Next we specify priors for each of the parameters we want to vary in the sampler. This is done by specifying a list of tuples. The zeroth element in each tuple should be a string specifying the prior for this parameter and the first element should be a list of the hyperparameters needed for this prior.
 
-# In[57]:
+# In[111]:
 
 
-priors =  [('uniform', [5., 200.]),('uniform', [0., 45.]),('uniform', [0., 1.])] # Define the priors por the parameters to explore
+priors =  [('uniform', [5., 200.]),('uniform', [0., 45.]),('uniform', [0., 1.]),('uniform', [0., 180.]),('uniform', [180., 360.])] # Define the priors por the parameters to explore
 
 
 # In[ ]:
@@ -556,13 +556,13 @@ priors =  [('uniform', [5., 200.]),('uniform', [0., 45.]),('uniform', [0., 1.])]
 
 # ## We fo for the main function
 
-# In[58]:
+# In[112]:
 
 
 def main():
-    param=[50,34.7,0.688]
+    param=[50,34.7,0.688,122.5,202.7]
     data=simu_LMC(param)
-    sampler = astroabc.ABC_class(3,25,data,[1000,0.1],30,priors,**prop)
+    sampler = astroabc.ABC_class(5,40,data,[1000,0.001],40,priors,**prop)
     model_sim=simu_LMC
     
     
@@ -571,7 +571,7 @@ def main():
 
 # Finally we run the main program
 
-# In[59]:
+# In[113]:
 
 
 main()
