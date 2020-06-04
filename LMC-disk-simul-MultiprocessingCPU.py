@@ -536,7 +536,7 @@ sigma=np.reshape(sigmam,1829)*0.001
 
 if __name__ == "__main__":
     prop={'tol_type':"exp","verbose":1,'adapt_t':True,'threshold':75,
-        'pert_kernel':2,'variance_method':0, 'dfunc':metric_asymetries, 'restart':"restart_abc.txt", 'outfile':"abc_mpi.txt",'mpi':True,'mp':Fals,'num_proc':8,
+        'pert_kernel':2,'variance_method':0, 'dfunc':metric_asymetries, 'restart':"restart_abc.txt", 'outfile':"abc_mpi.txt",'mpi':True,'mp':False,'num_proc':8,
         'from_restart':False}
 
 
